@@ -39,7 +39,6 @@ inputs:
     default: "false"
 runs:
   using: "composite"
-  env:
   steps:
     - name: get "${{ inputs.repo }}@${{ inputs.branch }}"
       run:  gh repo clone "${{ inputs.repo }}" -- "${{ inputs.clone_path }}" -b "${{ inputs.branch }}"
