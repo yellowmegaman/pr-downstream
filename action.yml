@@ -40,8 +40,9 @@ inputs:
 runs:
   using: "composite"
   env:
-    GH_TOKEN: "${{ inputs.token }}"
   steps:
     - name: get "${{ inputs.repo }}@${{ inputs.branch }}"
       run:  gh repo clone "${{ inputs.repo }}" -- "${{ inputs.clone_path }}" -b "${{ inputs.branch }}"
       shell: bash
+      env:
+        GH_TOKEN: "${{ inputs.token }}"
