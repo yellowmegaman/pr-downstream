@@ -48,7 +48,13 @@ runs:
       working-directory: "${{inputs.working_directory}}"
       env:
         GH_TOKEN: "${{ inputs.token }}"
-    - run: git checkout -b $(date +%s) && git add . && git commit -m "automated" && git push
+    - run: |
+        git config --global user.email "ci@cd"
+        git config --global user.name "ci"
+        git checkout -b $(date +%s)
+        git add .
+        git commit -m "automated"
+        git push
       shell: bash
       working-directory: "${{inputs.working_directory}}"
     - run:  gh pr create  --title="${{inputs.title}}" --body="${{inputs.body}}"
