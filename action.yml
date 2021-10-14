@@ -51,7 +51,7 @@ runs:
     - run: git checkout -b $(date +%s)
       shell: bash
       working-directory: "${{inputs.working_directory}}"
-    - run:  gh pr create --title="${{inputs.title}}" --body="${{inputs.body}}"
+    - run:  gh pr create --head="master" #--title="${{inputs.title}}" --body="${{inputs.body}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
       env:
