@@ -63,4 +63,5 @@ runs:
       working-directory: "${{inputs.working_directory}}"
       env:
         GH_TOKEN: "${{ inputs.token }}"
-    - run: echo "PR_URL: ${{ steps.pr.outputs.pr-url }}"
+    - run: echo "PR_URL ${{ steps.pr.outputs.pr-url }}"
+      shell: bash
