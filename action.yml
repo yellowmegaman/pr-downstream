@@ -49,6 +49,7 @@ runs:
       env:
         GH_TOKEN: "${{ inputs.token }}"
     - run: echo TARGET_BRANCH=$(date +%s) >> GITHUB_ENV
+      shell: bash
     - run: |
         git config --global user.email "ci@cd"
         git config --global user.name "ci"
