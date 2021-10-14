@@ -33,6 +33,9 @@ inputs:
     description: "Whenever to create a tag or not"
     required: false
     default: "false"
+  working_directory:
+    description: "Target repo local path"
+    required: true
 runs:
   using: "composite"
   steps:
@@ -40,3 +43,10 @@ runs:
       shell: bash
       env:
         GH_TOKEN: "${{ inputs.token }}"
+    - run:  ${{ inputs.change }}
+      shell: bash
+      working-directory: "${{inputs.working_directory}}"
+      env:
+        GH_TOKEN: "${{ inputs.token }}"
+    - run: ls "${{inputs.working_directory}}"
+      shell: bash
