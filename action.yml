@@ -1,0 +1,44 @@
+name: 'pr-downstream'
+description: 'Create and merge downstream PR'
+inputs:
+  token:
+    description: 'Github token with enough access rights'
+    required: true
+  repo:
+    description: 'Repo to create PR'
+    required: false
+    default: 'worldr/gitops'
+  branch:
+    description: 'Branch to create pr in'
+    required: false
+    default: "main"
+  clone_path:
+    description: 'Path to clone remote repo to'
+    required: false
+    default: ""
+  change:
+    description: 'What do we want to change in target repo'
+    required: true
+  merge:
+    description: 'Do we want to merge the PR?'
+    required: false
+    default: "true"
+  title:
+    description: 'PR title'
+    required: true
+  body:
+    description: 'PR body'
+    required: true
+  label:
+    description: 'PR label'
+    required: false
+    default: "automation"
+  create_tag:
+    description: "Whenever to create a tag or not"
+    required: false
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    - name: get "${{ inputs.repo }}@${{ inputs.branch }}"
+      run:  gh repo clone "${{ inputs.repo }}" -- "${{ inputs.clone_path }}" -b "${{ inputs.branch }}"
