@@ -12,10 +12,6 @@ inputs:
     description: 'Branch to create pr in'
     required: false
     default: "main"
-  clone_path:
-    description: 'Path to clone remote repo to'
-    required: false
-    default: ""
   change:
     description: 'What do we want to change in target repo'
     required: true
@@ -40,7 +36,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run:  gh repo clone "${{ inputs.repo }}" -- "${{ inputs.clone_path }}" -b "${{ inputs.branch }}"
+    - run:  gh auth status
       shell: bash
       env:
-        GITHUB_TOKEN: "${{ inputs.token }}"
+        GH_TOKEN: "${{ inputs.token }}"
