@@ -50,7 +50,7 @@ runs:
         GH_TOKEN: "${{ inputs.token }}"
     - run: ls "${{inputs.working_directory}}"
       shell: bash
-    - run:  gh pr create --head --title="${{inputs.title}}" --body="${{inputs.body}}"
+    - run:  gh pr create --head --fill --title="${{inputs.title}}" --body="${{inputs.body}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
       env:
