@@ -65,3 +65,8 @@ runs:
         GH_TOKEN: "${{ inputs.token }}"
     - run: echo "PR_URL ${{ steps.pr.outputs.pr-url }}"
       shell: bash
+    - run: gh pr merge "${{inputs.branch}}"
+      shell: bash
+      working-directory: "${{inputs.working_directory}}"
+      env:
+        GH_TOKEN: "${{ inputs.token }}"
