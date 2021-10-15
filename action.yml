@@ -73,6 +73,7 @@ runs:
       env:
         GH_TOKEN: "${{ inputs.token }}"
     - run: |
+        git config --global credential.https://github.com.helper ''
         git config --global user.email "${{inputs.user_email}}"
         git config --global user.name "${{inputs.user_name}}"
         git checkout -b "${{inputs.pr_branch}}"
