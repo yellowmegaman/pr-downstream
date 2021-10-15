@@ -35,7 +35,8 @@ inputs:
     default: "automation"
   working_directory:
     description: "Target repo local path"
-    required: true
+    required: false
+    default: pr-donwstream-tmp
   user_name:
     description: "Git user.name value"
     required: false
