@@ -84,6 +84,8 @@ runs:
       working-directory: "${{inputs.working_directory}}"
       env:
         GO111MODULE: auto
+    - run: echo "${{inputs.body}}"
+      shell: bash
     - run: gh release create "${{steps.downstream_tag.outputs.bumped}}" --notes "${{inputs.body}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
