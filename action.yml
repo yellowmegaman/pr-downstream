@@ -64,6 +64,8 @@ runs:
       shell: bash
       env:
         GH_TOKEN: "${{ inputs.token }}"
+    - run: ls
+      working-directory: "${{inputs.working_directory}}"
     - run:  ${{ inputs.change }}
       shell: bash
       working-directory: "${{inputs.working_directory}}"
