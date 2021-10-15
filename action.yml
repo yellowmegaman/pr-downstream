@@ -23,9 +23,6 @@ inputs:
   title:
     description: 'PR title'
     required: true
-  body:
-    description: 'PR body'
-    required: true
   label:
     description: 'PR label'
     required: false
@@ -69,7 +66,13 @@ runs:
         git push --set-upstream origin "${{inputs.pr_branch}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
-    - run:  gh pr create --base="${{inputs.target_branch}}" --title="${{inputs.title}}" --body="${{inputs.body}}"
+    - id: changelog
+      run: |
+        git fetch --depth=100
+        changelog=$(git --no-pager log $(git describe --abbrev=0 --tags $(git describe --abbrev=0 --tags)^)..$(git describe --abbrev=0 --tags) --pretty=format:"%an %s")
+        echo "::set-output name=changelog::$changelog"
+      shell: bash
+    - run:  gh pr create --base="${{inputs.target_branch}}" --title="${{inputs.title}}" --body="${{steps.changelog.outputs.changelog}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
     - run: gh pr merge "${{inputs.pr_branch}}" --squash --delete-branch
@@ -84,8 +87,8 @@ runs:
       working-directory: "${{inputs.working_directory}}"
       env:
         GO111MODULE: auto
-    - run: echo "${{inputs.body}}"
+    - run: echo "${{steps.changelog.outputs.changelog}}"
       shell: bash
-    - run: gh release create "${{steps.downstream_tag.outputs.bumped}}" --notes "${{inputs.body}}"
+    - run: gh release create "${{steps.downstream_tag.outputs.bumped}}" --notes "${{steps.changelog.outputs.changelog}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
