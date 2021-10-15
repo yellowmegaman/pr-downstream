@@ -70,8 +70,6 @@ runs:
       working-directory: "${{inputs.working_directory}}"
       env:
         GH_TOKEN: "${{ inputs.token }}"
-    - run: echo "PR_URL ${{ steps.pr.outputs.pr-url }}"
-      shell: bash
     - run: gh pr merge "${{inputs.branch}}" --squash --delete-branch
       shell: bash
       working-directory: "${{inputs.working_directory}}"
@@ -80,7 +78,7 @@ runs:
     - id: downstream_tag
       shell: bash
       run: |
-        git fetch
+        git fetch --depth=100
         echo "::set-output name=bumped::$(go run ${{ github.action_path }}/bump.go $(git describe --abbrev=0 --tags || echo "v0.0.0") patch)"
       working-directory: "${{inputs.working_directory}}"
     - run: gh release create "${{steps.downstream_tag.outputs.bumped}}" --notes "${{inputs.body}}"
