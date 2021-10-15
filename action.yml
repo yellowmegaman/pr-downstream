@@ -56,22 +56,17 @@ runs:
       shell: bash
       env:
         GH_TOKEN: "${{ inputs.token }}"
-#    - run: |
-#        git config --global credential.https://github.com.helper ''
-#        git config --global --add credential.https://github.com.helper '!'$(which gh)' auth git-credential'
-#      shell: bash
-#    - run: gh repo clone worldr/gitops -- "${{inputs.working_directory}}" -b "${{inputs.target_branch}}"
-#      shell: bash
-#      env:
-#        GH_TOKEN: "${{ inputs.token }}"
-#    - run: ls
-#      shell: bash
-#      working-directory: "${{inputs.working_directory}}"
+    - run: |
+        git config --global credential.https://github.com.helper ''
+        git config --global --add credential.https://github.com.helper '!'$(which gh)' auth git-credential'
+      shell: bash
+    - run: gh repo clone worldr/gitops -- "${{inputs.working_directory}}" -b "${{inputs.target_branch}}"
+      shell: bash
+      env:
+        GH_TOKEN: "${{ inputs.token }}"
     - run:  ${{ inputs.change }}
       shell: bash
       working-directory: "${{inputs.working_directory}}"
-      env:
-        GH_TOKEN: "${{ inputs.token }}"
     - run: |
         git config --global user.email "${{inputs.user_email}}"
         git config --global user.name "${{inputs.user_name}}"
