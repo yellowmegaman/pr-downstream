@@ -8,8 +8,12 @@ inputs:
     description: 'Repo to create PR'
     required: false
     default: 'worldr/gitops'
-  branch:
-    description: 'Branch to create pr in'
+  target_branch:
+    description: 'Branch to merge pr in'
+    required: false
+    default: "main"
+  pr_branch:
+    description: 'Branch to create pr from'
     required: false
     default: "main"
   change:
@@ -55,7 +59,7 @@ runs:
         git config --global credential.https://github.com.helper ''
         git config --global --add credential.https://github.com.helper '!'$(which gh)' auth git-credential'
       shell: bash
-    - run: gh repo clone worldr/gitops -- "${{inputs.working_directory}}" -b "${{inputs.branch}}"
+    - run: gh repo clone worldr/gitops -- "${{inputs.working_directory}}" -b "${{inputs.target_branch}}"
       env:
         GH_TOKEN: "${{ inputs.token }}"
     - run:  ${{ inputs.change }}
@@ -66,18 +70,18 @@ runs:
     - run: |
         git config --global user.email "${{inputs.user_email}}"
         git config --global user.name "${{inputs.user_name}}"
-        git checkout -b "${{inputs.branch}}"
+        git checkout -b "${{inputs.pr_branch}}"
         git add .
         git commit -m "${{inputs.commit_message}}"
-        git push --set-upstream origin "${{inputs.branch}}"
+        git push --set-upstream origin "${{inputs.pr_branch}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
-    - run:  gh pr create  --title="${{inputs.title}}" --body="${{inputs.body}}"
+    - run:  gh pr create --base="${{inputs.target_branch}}" --title="${{inputs.title}}" --body="${{inputs.body}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
       env:
         GH_TOKEN: "${{ inputs.token }}"
-    - run: gh pr merge "${{inputs.branch}}" --squash --delete-branch
+    - run: gh pr merge "${{inputs.pr_branch}}" --squash --delete-branch
       shell: bash
       working-directory: "${{inputs.working_directory}}"
       env:
