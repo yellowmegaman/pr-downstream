@@ -61,6 +61,7 @@ runs:
         git config --global --add credential.https://github.com.helper '!'$(which gh)' auth git-credential'
       shell: bash
     - run: gh repo clone worldr/gitops -- "${{inputs.working_directory}}" -b "${{inputs.target_branch}}"
+      shell: bash
       env:
         GH_TOKEN: "${{ inputs.token }}"
     - run:  ${{ inputs.change }}
