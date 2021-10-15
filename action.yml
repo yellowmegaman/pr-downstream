@@ -79,7 +79,9 @@ runs:
         GH_TOKEN: "${{ inputs.token }}"
     - id: downstream_tag
       shell: bash
-      run: echo "::set-output name=bumped::$(go run ${{ github.action_path }}/bump.go $(git describe --abbrev=0 --tags || echo "v0.0.0") patch)"
+      run: |
+        git fetch
+        echo "::set-output name=bumped::$(go run ${{ github.action_path }}/bump.go $(git describe --abbrev=0 --tags || echo "v0.0.0") patch)"
       working-directory: "${{inputs.working_directory}}"
     - run: gh release create "${{steps.downstream_tag.outputs.bumped}}" --notes "${{inputs.body}}"
       shell: bash
