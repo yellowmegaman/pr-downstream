@@ -29,13 +29,21 @@ inputs:
     description: 'PR label'
     required: false
     default: "automation"
-  create_tag:
-    description: "Whenever to create a tag or not"
-    required: false
-    default: "false"
   working_directory:
     description: "Target repo local path"
     required: true
+  user_name:
+    description: "Git user.name value"
+    required: false
+    default: "ci"
+  user_email:
+    description: "Git user.email"
+    required: false
+    default: "ci@cd.automation"
+  commit_message:
+    description: "Commit message for auto commit"
+    required: false
+    default: "auto-commit"
 runs:
   using: "composite"
   steps:
@@ -49,16 +57,15 @@ runs:
       env:
         GH_TOKEN: "${{ inputs.token }}"
     - run: |
-        git config --global user.email "ci@cd"
-        git config --global user.name "ci"
+        git config --global user.email "${{inputs.user_email}}"
+        git config --global user.name "${{inputs.user_name}}"
         git checkout -b "${{inputs.branch}}"
         git add .
-        git commit -m "automated"
+        git commit -m "${{commit_message}}"
         git push --set-upstream origin "${{inputs.branch}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
-    - id: pr
-      run:  echo "::set-output name=pr-url::$(gh pr create  --title="${{inputs.title}}" --body="${{inputs.body}}")"
+    - run:  gh pr create  --title="${{inputs.title}}" --body="${{inputs.body}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
       env:
@@ -67,6 +74,14 @@ runs:
       shell: bash
     - run: gh pr merge "${{inputs.branch}}" --squash --delete-branch
       shell: bash
+      working-directory: "${{inputs.working_directory}}"
+      env:
+        GH_TOKEN: "${{ inputs.token }}"
+    - id: downstream_tag
+      shell: bash
+      run: echo "::set-output name=bumped::$(go run bump.go $(git describe --abbrev=0 --tags) patch)"
+      working-directory: "${{inputs.working_directory}}"
+    - run: gh release create "${{steps.downstream_tag.outputs.bumped}}" --notes "${{inputs.body}}"
       working-directory: "${{inputs.working_directory}}"
       env:
         GH_TOKEN: "${{ inputs.token }}"
