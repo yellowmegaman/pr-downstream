@@ -95,6 +95,7 @@ runs:
       shell: bash
       run: |
         git fetch --depth=100
+        go get github.com/coreos/go-semver/semver
         echo "::set-output name=bumped::$(go run ${{ github.action_path }}/bump.go $(git describe --abbrev=0 --tags || echo "v0.0.0") patch)"
       working-directory: "${{inputs.working_directory}}"
       env:
