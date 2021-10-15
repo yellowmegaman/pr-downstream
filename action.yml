@@ -61,7 +61,7 @@ runs:
         git config --global user.name "${{inputs.user_name}}"
         git checkout -b "${{inputs.branch}}"
         git add .
-        git commit -m "${{commit_message}}"
+        git commit -m "${{inputs.commit_message}}"
         git push --set-upstream origin "${{inputs.branch}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
