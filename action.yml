@@ -97,6 +97,8 @@ runs:
         git fetch --depth=100
         echo "::set-output name=bumped::$(go run ${{ github.action_path }}/bump.go $(git describe --abbrev=0 --tags || echo "v0.0.0") patch)"
       working-directory: "${{inputs.working_directory}}"
+      env:
+        GO111MODULE: auto
     - run: gh release create "${{steps.downstream_tag.outputs.bumped}}" --notes "${{inputs.body}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
