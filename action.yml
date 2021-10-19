@@ -71,7 +71,7 @@ runs:
         changelog="${changelog//$'\r'/'%0D'}"
         echo "::set-output name=changelog::$changelog"
       shell: bash
-    - run:  gh pr create --base="${{inputs.target_branch}}" --title="${{steps.branch.outputs.branch}}" --body="${{steps.changelog.outputs.changelog}}"
+    - run:  gh pr create --base="${{inputs.target_branch}}" --title="${{steps.branch.outputs.branch}}" --body="${{steps.changelog.outputs.changelog}}" --label="${{inputs.label}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
     - run: gh pr merge "${{steps.branch.outputs.branch}}" --squash --delete-branch
