@@ -9,10 +9,6 @@ inputs:
     description: 'Branch to merge pr in'
     required: false
     default: "main"
-  pr_branch:
-    description: 'Branch to create pr from'
-    required: false
-    default: "main"
   change:
     description: 'What do we want to change in target repo'
     required: true
@@ -20,9 +16,6 @@ inputs:
     description: 'Do we want to merge the PR?'
     required: false
     default: "true"
-  title:
-    description: 'PR title'
-    required: true
   label:
     description: 'PR label'
     required: false
@@ -51,6 +44,9 @@ runs:
     - id: tag
       run: echo "::set-output name=current::$(git describe --abbrev=0 --tags)"
       shell: bash
+    - id: branch
+      run: echo "::set-output name=branch::$(echo "$GITHUB_REPOSITORY-$tag" | tr '/' '-')"
+      shell: bash
     - run: gh repo clone worldr/gitops -- "${{inputs.working_directory}}" -b "${{inputs.target_branch}}"
       shell: bash
     - run:  ${{ inputs.change }}
@@ -59,10 +55,10 @@ runs:
     - run: |
         git config --global user.email "${{inputs.user_email}}"
         git config --global user.name "${{inputs.user_name}}"
-        git checkout -b "${{inputs.pr_branch}}"
+        git checkout -b "${{steps.branch.outputs.branch}}"
         git add .
         git commit -m "$(echo $GITHUB_REPOSITORY | cut -d '/' -f2) ${{steps.tag.outputs.current}}"
-        git push --set-upstream origin "${{inputs.pr_branch}}"
+        git push --set-upstream origin "${{steps.branch.outputs.branch}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
     - id: changelog
@@ -75,10 +71,10 @@ runs:
         changelog="${changelog//$'\r'/'%0D'}"
         echo "::set-output name=changelog::$changelog"
       shell: bash
-    - run:  gh pr create --base="${{inputs.target_branch}}" --title="${{inputs.title}}" --body="${{steps.changelog.outputs.changelog}}"
+    - run:  gh pr create --base="${{inputs.target_branch}}" --title="${{steps.branch.outputs.branch}}" --body="${{steps.changelog.outputs.changelog}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
-    - run: gh pr merge "${{inputs.pr_branch}}" --squash --delete-branch
+    - run: gh pr merge "${{steps.branch.outputs.branch}}" --squash --delete-branch
       shell: bash
       working-directory: "${{inputs.working_directory}}"
     - id: downstream_tag
