@@ -66,10 +66,14 @@ runs:
         git push --set-upstream origin "${{inputs.pr_branch}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
+    - id: tag
+      run: echo "::set-output name=current::$(git describe --abbrev=0 --tags)"
+      shell: bash
     - id: changelog
       run: |
         git fetch --depth=100
-        changelog=$(echo -e "$GITHUB_REPOSITORY updated to $(git describe --abbrev=0 --tags)\n$(git --no-pager log $(git describe --abbrev=0 --tags $(git describe --abbrev=0 --tags)^)..$(git describe --abbrev=0 --tags) --pretty=format:"%an %s" | sed 's,#,'$GITHUB_SERVER_URL'/'$GITHUB_REPOSITORY'/pull/,g')")
+        tag="${{steps.tag.outputs.current}}"
+        changelog=$(echo -e "$GITHUB_REPOSITORY updated to $tag\n$(git --no-pager log $(git describe --abbrev=0 --tags $tag^)..$tag --pretty=format:"%an %s" | sed 's,#,'$GITHUB_SERVER_URL'/'$GITHUB_REPOSITORY'/pull/,g')")
         changelog="${changelog//'%'/'%25'}"
         changelog="${changelog//$'\n'/'%0A'}"
         changelog="${changelog//$'\r'/'%0D'}"
