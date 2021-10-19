@@ -39,10 +39,6 @@ inputs:
     description: "Git user.email"
     required: false
     default: "ci@cd.automation"
-  commit_message:
-    description: "Commit message for auto commit"
-    required: false
-    default: "auto-update"
 runs:
   using: "composite"
   steps:
@@ -51,6 +47,9 @@ runs:
     - run: |
         git config --global credential.https://github.com.helper ''
         git config --global --add credential.https://github.com.helper '!'$(which gh)' auth git-credential'
+      shell: bash
+    - id: tag
+      run: echo "::set-output name=current::$(git describe --abbrev=0 --tags)"
       shell: bash
     - run: gh repo clone worldr/gitops -- "${{inputs.working_directory}}" -b "${{inputs.target_branch}}"
       shell: bash
@@ -62,13 +61,10 @@ runs:
         git config --global user.name "${{inputs.user_name}}"
         git checkout -b "${{inputs.pr_branch}}"
         git add .
-        git commit -m "${{inputs.commit_message}}"
+        git commit -m "$(echo $GITHUB_REPOSITORY | cut -d '/' -f2) ${{steps.tag.outputs.current}}"
         git push --set-upstream origin "${{inputs.pr_branch}}"
       shell: bash
       working-directory: "${{inputs.working_directory}}"
-    - id: tag
-      run: echo "::set-output name=current::$(git describe --abbrev=0 --tags)"
-      shell: bash
     - id: changelog
       run: |
         git fetch --depth=100
