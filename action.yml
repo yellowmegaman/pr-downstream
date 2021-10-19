@@ -42,7 +42,7 @@ inputs:
   commit_message:
     description: "Commit message for auto commit"
     required: false
-    default: "auto-commit"
+    default: "auto-update"
 runs:
   using: "composite"
   steps:
