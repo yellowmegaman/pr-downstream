@@ -45,7 +45,7 @@ runs:
       run: echo "::set-output name=current::$(git describe --abbrev=0 --tags)"
       shell: bash
     - id: branch
-      run: echo "::set-output name=branch::$(echo "$GITHUB_REPOSITORY-$tag" | tr '/' '-')"
+      run: echo "::set-output name=branch::$(echo "$GITHUB_REPOSITORY-${{steps.tag.outputs.current}}" | tr '/' '-')"
       shell: bash
     - run: gh repo clone worldr/gitops -- "${{inputs.working_directory}}" -b "${{inputs.target_branch}}"
       shell: bash
